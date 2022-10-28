@@ -1,2 +1,2 @@
 # Structure_analysis
-Detailed parameters and configuration files for RosettaLigand.
+Detailed parameters and configuration files for RosettaLigand. (pUGTdb)
