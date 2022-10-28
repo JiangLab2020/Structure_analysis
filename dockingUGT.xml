@@ -1,0 +1,55 @@
+<ROSETTASCRIPTS>                                                                                                                                                    
+    This script is designed for docking X chain ligand                                                                                                              
+    Author: QianWang                                                                                                                                                
+    Version: 2.3                                                                                                                                                    
+    Time: 2022-08-30                                                                                                                                                
+                                                                                                                                                                    
+    <SCOREFXNS>                                                                                                                                                     
+        <ScoreFunction name="r15_soft" weights="ref2015_soft"/>                                                                                                     
+        <ScoreFunction name="ligand_soft_rep" weights="ligand_soft_rep"/>                                                                                           
+        <ScoreFunction name="hard_rep" weights="ligand"/>                                                                                                           
+    </SCOREFXNS>                                                                                                                                                    
+                                                                                                                                                                    
+    <LIGAND_AREAS>                                                                                                                                                  
+        <LigandArea name="docking_sidechain_X" chain="X" cutoff="7.0" add_nbr_radius="true"  all_atom_mode="true"/>                                                 
+        <LigandArea name="final_sidechain_X"   chain="X" cutoff="7.0" add_nbr_radius="true"  all_atom_mode="true" minimize_ligand="10" Calpha_restraints="0.3"/>    
+        <LigandArea name="final_backbone_X"    chain="X" cutoff="7.0" add_nbr_radius="false" all_atom_mode="true" minimize_ligand="10" Calpha_restraints="0.3"/>    
+    </LIGAND_AREAS>                                                                                                                                                 
+                                                                                                                                                                    
+    <INTERFACE_BUILDERS>                                                                                                                                            
+        <InterfaceBuilder name="side_chain_for_docking" ligand_areas="docking_sidechain_X"/>                                                                        
+        <InterfaceBuilder name="side_chain_for_final"   ligand_areas="final_sidechain_X"/>                                                                          
+        <InterfaceBuilder name="backbone" ligand_areas="final_backbone_X" extension_window="3"/>                                                                    
+    </INTERFACE_BUILDERS>                                                                                                                                           
+                                                                                                                                                                    
+    <MOVEMAP_BUILDERS>                                                                                                                                              
+        <MoveMapBuilder name="docking" sc_interface="side_chain_for_docking" minimize_water="false"/>                                                               
+        <MoveMapBuilder name="final"   sc_interface="side_chain_for_final"   minimize_water="false" bb_interface="backbone"/>                                       
+    </MOVEMAP_BUILDERS>                                                                                                                                             
+                                                                                                                                                                    
+    <SCORINGGRIDS ligand_chain="X" width="20">                                                                                                                      
+        <ClassicGrid grid_name="classic" weight="1.0"/>                                                                                                             
+    </SCORINGGRIDS>                                                                                                                                                 
+                                                                                                                                                                    
+    <MOVERS>                                                                                                                                                        
+        <ConstraintSetMover name="constraints_UDP" add_constraints="true" cst_file="UDP.constraints"/>                                                              
+        <Transform name="transform_X" chain="X" box_size="7.0" move_distance="0.15" angle="20" cycles="1000" repeats="3" temperature="5"/>                          
+        <HighResDocker name="high_res_docker" cycles="6" repack_every_Nth="3" scorefxn="ligand_soft_rep" movemap_builder="docking"/>                                
+        <FinalMinimizer name="final" scorefxn="hard_rep" movemap_builder="final"/>                                                                                  
+        <InterfaceScoreCalculator name="add_scores" chains="X" scorefxn="r15_soft"/>                                                                                
+                                                                                                                                                                    
+        <ParsedProtocol name="high_res_dock">                                                                                                                       
+            <Add mover_name="constraints_UDP"/>                                                                                                                     
+            <Add mover_name="transform_X"/>                                                                                                                         
+            <Add mover_name="high_res_docker"/>                                                                                                                     
+            <Add mover_name="final"/>                                                                                                                               
+            <Add mover_name="add_scores"/>                                                                                                                          
+        </ParsedProtocol>                                                                                                                                           
+                                                                                                                                                                    
+    </MOVERS>                                                                                                                                                       
+                                                                                                                                                                    
+    <PROTOCOLS>                                                                                                                                                     
+        <Add mover_name="high_res_dock"/>                                                                                                                           
+    </PROTOCOLS>                                                                                                                                                    
+                                                                                                                                                                    
+</ROSETTASCRIPTS>                                                                                                                                                   

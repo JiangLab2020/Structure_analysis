@@ -1,0 +1,21 @@
+-in:file:s AAA59054_UDG.pdb 
+-in:file:native AAA59054_UDG.pdb 
+-in:file:extra_res_fa UDG.params 
+
+-run::preserve_header 
+#-in:auto_setup_metals 
+
+-qsar:grid_dir /home/wangq/Tmp/grids 
+-parser:protocol dockingUGT.xml 
+-packing 
+    -ex1 
+    -ex2 
+    -no_optH false 
+    -flip_HNQ true 
+    -ignore_ligand_chi true 
+-out 
+    -file:silent dockingUGT.silents
+    -file:scorefile dockingUGT.sc
+    -level 100 
+    -nstruct 1000 
+    -overwrite
